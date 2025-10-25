@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drag Handle Test - BeeDoc</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 0 20px;
+            line-height: 1.6;
+        }
+        .test-info {
+            background: #f0f7ff;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            border-left: 4px solid #007bff;
+        }
+        .test-info h2 {
+            margin-top: 0;
+        }
+        .test-section {
+            border: 2px dashed #ccc;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+        }
+        .test-section h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        .expected {
+            background: #e8f5e9;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+            font-size: 14px;
+        }
+        .expected strong {
+            color: #2e7d32;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-info">
+        <h2>🧪 Drag Handle Visual Test</h2>
+        <p>This page helps you verify that drag handles are displaying correctly in BeeDoc.</p>
+        <p><strong>To test:</strong></p>
+        <ol>
+            <li>Open BeeDoc at <a href="http://localhost:8080" target="_blank">http://localhost:8080</a></li>
+            <li>Look for the vertical dots (⋮⋮) on the left side of each section</li>
+            <li>Verify the handles appear for all section types listed below</li>
+            <li>Hover over a handle to see it highlight</li>
+            <li>Click and drag a handle to reorder sections</li>
+        </ol>
+    </div>
+
+    <div class="test-section">
+        <h3>1. Paragraphs</h3>
+        <div class="expected">
+            <strong>Expected:</strong> Each paragraph should have a drag handle (⋮⋮) on the left
+        </div>
+        <p><strong>Test:</strong> Create multiple paragraphs in the editor</p>
+        <p>Example paragraph 1</p>
+        <p>Example paragraph 2</p>
+        <p>Example paragraph 3</p>
+    </div>
+
+    <div class="test-section">
+        <h3>2. Headings (H1-H6)</h3>
+        <div class="expected">
+            <strong>Expected:</strong> All heading levels should show drag handles
+        </div>
+        <p><strong>Test:</strong> Use Alt+1 through Alt+6 to create headings</p>
+    </div>
+
+    <div class="test-section">
+        <h3>3. Lists</h3>
+        <div class="expected">
+            <strong>Expected:</strong> Entire lists should be draggable, not individual items
+        </div>
+        <p><strong>Test:</strong> Click UL or OL button to create lists</p>
+    </div>
+
+    <div class="test-section">
+        <h3>4. Blockquotes</h3>
+        <div class="expected">
+            <strong>Expected:</strong> Blockquotes should have drag handles
+        </div>
+        <p><strong>Test:</strong> Click Quote button to create blockquote</p>
+    </div>
+
+    <div class="test-section">
+        <h3>5. Code Blocks</h3>
+        <div class="expected">
+            <strong>Expected:</strong> Code blocks should be draggable via handle
+        </div>
+        <p><strong>Test:</strong> Click { } button to create code block</p>
+    </div>
+
+    <div class="test-section">
+        <h3>6. Tables</h3>
+        <div class="expected">
+            <strong>Expected:</strong> Tables should show drag handle
+        </div>
+        <p><strong>Test:</strong> Click Table button to create table</p>
+    </div>
+
+    <div class="test-section">
+        <h3>7. Horizontal Rules</h3>
+        <div class="expected">
+            <strong>Expected:</strong> HR elements should have drag handles
+        </div>
+        <p><strong>Test:</strong> Click HR button to create horizontal rule</p>
+    </div>
+
+    <div class="test-section">
+        <h3>Visual Behavior Checklist</h3>
+        <div class="expected">
+            <strong>Expected behaviors:</strong>
+        </div>
+        <ul>
+            <li>✓ Drag handles visible at 40% opacity by default</li>
+            <li>✓ Handles become 100% opacity on hover</li>
+            <li>✓ Handle shows light blue background on hover</li>
+            <li>✓ Cursor changes to "grab" over handles</li>
+            <li>✓ Cursor changes to "grabbing" while dragging</li>
+            <li>✓ Blue drop indicator line appears when dragging</li>
+            <li>✓ Sections have 30px left padding to make room for handle</li>
+            <li>✓ Lists have 70px left padding (30px + 40px for list markers)</li>
+        </ul>
+    </div>
+
+    <div class="test-section">
+        <h3>Dark Theme Test</h3>
+        <div class="expected">
+            <strong>Expected:</strong> Click theme toggle button in BeeDoc toolbar
+        </div>
+        <ul>
+            <li>Drag handles should be visible in dark theme</li>
+            <li>Handle color should adjust for dark background</li>
+            <li>Hover highlight should use lighter blue (#64b4ff)</li>
+        </ul>
+    </div>
+
+    <div class="test-section">
+        <h3>Known Issues to Check</h3>
+        <ul>
+            <li>🔍 Ensure handles don't interfere with text editing</li>
+            <li>🔍 Verify handles don't break contenteditable behavior</li>
+            <li>🔍 Check that handles are removed when drag-drop is disabled</li>
+            <li>🔍 Confirm handles reappear on newly added elements</li>
+        </ul>
+    </div>
+
+    <div class="test-info">
+        <h3>Success Criteria</h3>
+        <p>The drag handle implementation is successful if:</p>
+        <ol>
+            <li>All section types show visible drag handles</li>
+            <li>Handles are always visible (not just on hover)</li>
+            <li>Handles are positioned correctly on the left</li>
+            <li>Dragging works smoothly from the handles</li>
+            <li>No layout issues or text overlapping</li>
+            <li>Handles work in both light and dark themes</li>
+        </ol>
+    </div>
+</body>
+</html>

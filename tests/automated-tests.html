@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BeeDoc Automated Tests</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        h1 {
+            color: #333;
+        }
+        .test-suite {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-case {
+            padding: 10px;
+            margin: 5px 0;
+            border-left: 4px solid #ddd;
+            background: #f9f9f9;
+        }
+        .test-case.pass {
+            border-left-color: #4caf50;
+            background: #e8f5e9;
+        }
+        .test-case.fail {
+            border-left-color: #f44336;
+            background: #ffebee;
+        }
+        .test-case.running {
+            border-left-color: #2196f3;
+            background: #e3f2fd;
+        }
+        .summary {
+            display: flex;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .stat {
+            flex: 1;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .stat.pass .stat-value { color: #4caf50; }
+        .stat.fail .stat-value { color: #f44336; }
+        .stat.total .stat-value { color: #2196f3; }
+        button {
+            background: #2196f3;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+        }
+        button:hover {
+            background: #1976d2;
+        }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .error-details {
+            color: #d32f2f;
+            font-family: monospace;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+        #test-editor {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>🐝 BeeDoc Automated Test Suite</h1>
+    
+    <div>
+        <button id="run-all" onclick="runAllTests()">Run All Tests</button>
+        <button id="run-unit" onclick="runUnitTests()">Run Unit Tests</button>
+        <button id="run-integration" onclick="runIntegrationTests()">Run Integration Tests</button>
+        <button onclick="clearResults()">Clear Results</button>
+    </div>
+
+    <div class="summary">
+        <div class="stat total">
+            <div>Total Tests</div>
+            <div class="stat-value" id="total-tests">0</div>
+        </div>
+        <div class="stat pass">
+            <div>Passed</div>
+            <div class="stat-value" id="passed-tests">0</div>
+        </div>
+        <div class="stat fail">
+            <div>Failed</div>
+            <div class="stat-value" id="failed-tests">0</div>
+        </div>
+        <div class="stat">
+            <div>Duration</div>
+            <div class="stat-value" id="duration">0ms</div>
+        </div>
+    </div>
+
+    <div id="test-results"></div>
+
+    <!-- Hidden editor for testing -->
+    <div id="test-editor" contenteditable="true"></div>
+
+    <!-- Load dependencies -->
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    
+    <!-- Load application scripts -->
+    <script src="../src/scripts/editor.js"></script>
+    <script src="../src/scripts/toolbar.js"></script>
+    <script src="../src/scripts/file-operations.js"></script>
+    <script src="../src/scripts/d3-renderer.js"></script>
+
+    <script>
+        // Test Framework
+        class TestRunner {
+            constructor() {
+                this.tests = [];
+                this.results = [];
+                this.currentSuite = null;
+            }
+
+            suite(name, fn) {
+                this.currentSuite = name;
+                const suiteDiv = document.createElement('div');
+                suiteDiv.className = 'test-suite';
+                suiteDiv.innerHTML = `<h2>${name}</h2>`;
+                suiteDiv.id = `suite-${name.replace(/\s+/g, '-')}`;
+                document.getElementById('test-results').appendChild(suiteDiv);
+                fn();
+                this.currentSuite = null;
+            }
+
+            test(name, fn) {
+                this.tests.push({ suite: this.currentSuite, name, fn });
+            }
+
+            async run() {
+                const startTime = Date.now();
+                this.results = [];
+                
+                for (const test of this.tests) {
+                    const result = await this.runTest(test);
+                    this.results.push(result);
+                    this.updateUI(result);
+                }
+
+                const duration = Date.now() - startTime;
+                this.updateSummary(duration);
+            }
+
+            async runTest(test) {
+                const testDiv = document.createElement('div');
+                testDiv.className = 'test-case running';
+                testDiv.innerHTML = `<strong>${test.name}</strong> - Running...`;
+                
+                const suiteDiv = document.getElementById(`suite-${test.suite.replace(/\s+/g, '-')}`);
+                suiteDiv.appendChild(testDiv);
+
+                try {
+                    await test.fn();
+                    testDiv.className = 'test-case pass';
+                    testDiv.innerHTML = `<strong>✓ ${test.name}</strong> - Passed`;
+                    return { name: test.name, passed: true };
+                } catch (error) {
+                    testDiv.className = 'test-case fail';
+                    testDiv.innerHTML = `<strong>✗ ${test.name}</strong> - Failed<div class="error-details">${error.message}</div>`;
+                    return { name: test.name, passed: false, error: error.message };
+                }
+            }
+
+            updateUI(result) {
+                // Update in real-time
+                this.updateSummary();
+            }
+
+            updateSummary(duration = 0) {
+                const total = this.results.length;
+                const passed = this.results.filter(r => r.passed).length;
+                const failed = total - passed;
+
+                document.getElementById('total-tests').textContent = total;
+                document.getElementById('passed-tests').textContent = passed;
+                document.getElementById('failed-tests').textContent = failed;
+                if (duration > 0) {
+                    document.getElementById('duration').textContent = duration + 'ms';
+                }
+            }
+        }
+
+        const runner = new TestRunner();
+
+        // Assertion helpers
+        function assert(condition, message) {
+            if (!condition) {
+                throw new Error(message || 'Assertion failed');
+            }
+        }
+
+        function assertEqual(actual, expected, message) {
+            if (actual !== expected) {
+                throw new Error(message || `Expected ${expected}, got ${actual}`);
+            }
+        }
+
+        function assertContains(str, substring, message) {
+            if (!str.includes(substring)) {
+                throw new Error(message || `Expected "${str}" to contain "${substring}"`);
+            }
+        }
+
+        // Unit Tests
+        runner.suite('Markdown Editor - Basic Functionality', () => {
+            runner.test('Editor initializes correctly', () => {
+                const editorEl = document.getElementById('test-editor');
+                const editor = new MarkdownEditor(editorEl);
+                assert(editor !== null, 'Editor should be created');
+                assert(editor.editor === editorEl, 'Editor element should be set');
+            });
+
+            runner.test('Can set and get markdown content', () => {
+                const editorEl = document.getElementById('test-editor');
+                const editor = new MarkdownEditor(editorEl);
+                editorEl.innerHTML = '<p>Test content</p>';
+                const markdown = editor.getMarkdown();
+                assert(markdown.length > 0, 'Should return markdown');
+            });
+
+            runner.test('Word count calculates correctly', () => {
+                const editorEl = document.getElementById('test-editor');
+                const editor = new MarkdownEditor(editorEl);
+                editorEl.textContent = 'Hello world test';
+                const count = editor.getWordCount();
+                assertEqual(count, 3, 'Should count 3 words');
+            });
+
+            runner.test('Character count calculates correctly', () => {
+                const editorEl = document.getElementById('test-editor');
+                const editor = new MarkdownEditor(editorEl);
+                editorEl.textContent = 'Hello';
+                const count = editor.getCharacterCount();
+                assertEqual(count, 5, 'Should count 5 characters');
+            });
+        });
+
+        runner.suite('Markdown Conversion', () => {
+            runner.test('Converts bold HTML to markdown', () => {
+                const editorEl = document.getElementById('test-editor');
+                const editor = new MarkdownEditor(editorEl);
+                editorEl.innerHTML = '<p><strong>bold text</strong></p>';
+                const markdown = editor.htmlToMarkdown(editorEl.innerHTML);
+                assertContains(markdown, '**bold text**', 'Should contain bold markdown');
+            });
+
+            runner.test('Converts italic HTML to markdown', () => {
+                const editorEl = document.getElementById('test-editor');
+                const editor = new MarkdownEditor(editorEl);
+                editorEl.innerHTML = '<p><em>italic text</em></p>';
+                const markdown = editor.htmlToMarkdown(editorEl.innerHTML);
+                assertContains(markdown, '*italic text*', 'Should contain italic markdown');
+            });
+
+            runner.test('Converts headings to markdown', () => {
+                const editorEl = document.getElementById('test-editor');
+                const editor = new MarkdownEditor(editorEl);
+                editorEl.innerHTML = '<h1>Heading 1</h1>';
+                const markdown = editor.htmlToMarkdown(editorEl.innerHTML);
+                assertContains(markdown, '# Heading 1', 'Should contain H1 markdown');
+            });
+
+            runner.test('Converts lists to markdown', () => {
+                const editorEl = document.getElementById('test-editor');
+                const editor = new MarkdownEditor(editorEl);
+                editorEl.innerHTML = '<ul><li>Item 1</li><li>Item 2</li></ul>';
+                const markdown = editor.htmlToMarkdown(editorEl.innerHTML);
+                assertContains(markdown, '- Item 1', 'Should contain list markdown');
+            });
+        });
+
+        runner.suite('Format Operations', () => {
+            runner.test('Toggle bold format', () => {
+                const editorEl = document.getElementById('test-editor');
+                const editor = new MarkdownEditor(editorEl);
+                editorEl.innerHTML = '<p>test</p>';
+                
+                // Select all text
+                const range = document.createRange();
+                range.selectNodeContents(editorEl);
+                const selection = window.getSelection();
+                selection.removeAllRanges();
+                selection.addRange(range);
+                
+                editor.toggleFormat('bold');
+                const html = editorEl.innerHTML;
+                assert(html.includes('<strong>') || html.includes('<b>'), 'Should contain bold tag');
+            });
+        });
+
+        runner.suite('D3.js Renderer', () => {
+            runner.test('D3Renderer initializes', () => {
+                const editorEl = document.getElementById('test-editor');
+                const renderer = new D3Renderer(editorEl);
+                assert(renderer !== null, 'Renderer should be created');
+                assert(renderer.animationEnabled === true, 'Animations should be enabled by default');
+            });
+
+            runner.test('Can toggle animations', () => {
+                const editorEl = document.getElementById('test-editor');
+                const renderer = new D3Renderer(editorEl);
+                renderer.toggleAnimations(false);
+                assertEqual(renderer.animationEnabled, false, 'Animations should be disabled');
+                renderer.toggleAnimations(true);
+                assertEqual(renderer.animationEnabled, true, 'Animations should be enabled');
+            });
+        });
+
+        runner.suite('Integration Tests', () => {
+            runner.test('Complete editing workflow', async () => {
+                const editorEl = document.getElementById('test-editor');
+                const editor = new MarkdownEditor(editorEl);
+                
+                // Type content
+                editorEl.innerHTML = '<h1>Test Document</h1><p>Content here</p>';
+                
+                // Get markdown
+                const markdown = editor.getMarkdown();
+                assert(markdown.length > 0, 'Should have markdown content');
+                
+                // Check word count
+                const words = editor.getWordCount();
+                assert(words > 0, 'Should have words');
+            });
+
+            runner.test('Format preservation', () => {
+                const editorEl = document.getElementById('test-editor');
+                const editor = new MarkdownEditor(editorEl);
+                
+                editorEl.innerHTML = '<p><strong>Bold</strong> and <em>italic</em></p>';
+                const markdown = editor.htmlToMarkdown(editorEl.innerHTML);
+                
+                assertContains(markdown, '**Bold**', 'Should preserve bold');
+                assertContains(markdown, '*italic*', 'Should preserve italic');
+            });
+        });
+
+        // Run functions
+        async function runAllTests() {
+            clearResults();
+            await runner.run();
+        }
+
+        async function runUnitTests() {
+            clearResults();
+            const unitTests = runner.tests.filter(t => 
+                !t.suite.includes('Integration')
+            );
+            const originalTests = runner.tests;
+            runner.tests = unitTests;
+            await runner.run();
+            runner.tests = originalTests;
+        }
+
+        async function runIntegrationTests() {
+            clearResults();
+            const integrationTests = runner.tests.filter(t => 
+                t.suite.includes('Integration')
+            );
+            const originalTests = runner.tests;
+            runner.tests = integrationTests;
+            await runner.run();
+            runner.tests = originalTests;
+        }
+
+        function clearResults() {
+            document.getElementById('test-results').innerHTML = '';
+            document.getElementById('total-tests').textContent = '0';
+            document.getElementById('passed-tests').textContent = '0';
+            document.getElementById('failed-tests').textContent = '0';
+            document.getElementById('duration').textContent = '0ms';
+            runner.results = [];
+        }
+
+        // Auto-run on load
+        window.addEventListener('load', () => {
+            console.log('Test suite loaded. Click "Run All Tests" to begin.');
+        });
+    </script>
+</body>
+</html>

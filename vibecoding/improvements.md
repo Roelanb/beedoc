@@ -1,0 +1,1 @@
+Can you add drag and drop for the sections in the document (paragraphs, headings, lists, etc.).

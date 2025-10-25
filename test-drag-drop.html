@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drag and Drop Test</title>
+    <link rel="stylesheet" href="src/styles/main.css">
+    <link rel="stylesheet" href="src/styles/editor.css">
+    <link rel="stylesheet" href="src/styles/drag-drop.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .editor {
+            min-height: 400px;
+            border: 2px solid #ccc;
+            padding: 20px;
+            border-radius: 8px;
+            background: white;
+        }
+        h1 {
+            color: #333;
+        }
+        .status {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f0f7ff;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+        .test-info {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #fff3cd;
+            border-radius: 4px;
+            border-left: 4px solid #ffc107;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <div class="test-info">
+            <h2>🧪 Drag and Drop Test Page</h2>
+            <p><strong>Instructions:</strong></p>
+            <ol>
+                <li>You should see drag handles (⋮⋮) on the left of each section below</li>
+                <li>Try clicking and dragging a section to reorder it</li>
+                <li>Check the console (F12) for any errors</li>
+                <li>The status box at the bottom will show DragDropManager info</li>
+            </ol>
+        </div>
+
+        <h1>Test Editor</h1>
+        <div id="editor" class="editor" contenteditable="true">
+            <h2>Section 1: First Heading</h2>
+            <p>This is the first paragraph. You should be able to drag this.</p>
+            <h2>Section 2: Second Heading</h2>
+            <p>This is the second paragraph. Try dragging this around.</p>
+            <p>This is another paragraph in the same section.</p>
+            <h3>Section 3: A Subheading</h3>
+            <ul>
+                <li>List item 1</li>
+                <li>List item 2</li>
+                <li>List item 3</li>
+            </ul>
+            <blockquote>
+                <p>This is a blockquote that should also be draggable.</p>
+            </blockquote>
+        </div>
+
+        <div class="status" id="status">
+            Loading...
+        </div>
+    </div>
+
+    <script src="src/scripts/drag-drop.js"></script>
+    <script>
+        // Initialize drag and drop
+        const editorElement = document.getElementById('editor');
+        const statusElement = document.getElementById('status');
+
+        let dragDropManager;
+
+        try {
+            dragDropManager = new DragDropManager(editorElement);
+
+            statusElement.innerHTML = `
+                <strong>✅ DragDropManager initialized successfully!</strong><br>
+                - Enabled: ${dragDropManager.enabled}<br>
+                - Drop indicator created: ${dragDropManager.dropIndicator ? 'Yes' : 'No'}<br>
+                - Editor element: ${editorElement.id}<br>
+                <br>
+                <strong>Drag handles found:</strong> ${editorElement.querySelectorAll('.drag-handle').length}<br>
+                <strong>Draggable sections:</strong> ${editorElement.querySelectorAll('.draggable-section').length}<br>
+                <br>
+                <button onclick="testToggle()">Toggle Drag & Drop</button>
+                <button onclick="checkStatus()">Check Status</button>
+            `;
+
+            // Function to toggle drag and drop
+            window.testToggle = function() {
+                const enabled = dragDropManager.toggle();
+                checkStatus();
+                alert('Drag & Drop ' + (enabled ? 'enabled' : 'disabled'));
+            };
+
+            // Function to check status
+            window.checkStatus = function() {
+                const handles = editorElement.querySelectorAll('.drag-handle');
+                const sections = editorElement.querySelectorAll('.draggable-section');
+
+                statusElement.innerHTML = `
+                    <strong>${dragDropManager.enabled ? '✅' : '❌'} DragDropManager Status</strong><br>
+                    - Enabled: ${dragDropManager.enabled}<br>
+                    - Dragged element: ${dragDropManager.draggedElement ? 'Yes (currently dragging)' : 'None'}<br>
+                    - Drag handles: ${handles.length}<br>
+                    - Draggable sections: ${sections.length}<br>
+                    <br>
+                    <button onclick="testToggle()">Toggle Drag & Drop</button>
+                    <button onclick="checkStatus()">Check Status</button>
+                `;
+            };
+
+            console.log('✅ DragDropManager test initialized');
+            console.log('DragDropManager instance:', dragDropManager);
+
+        } catch (error) {
+            statusElement.innerHTML = `
+                <strong>❌ Error initializing DragDropManager!</strong><br>
+                ${error.message}<br>
+                <pre>${error.stack}</pre>
+            `;
+            console.error('❌ DragDropManager initialization error:', error);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,75 @@
+/* Main Styles */
+:root {
+    --bg-primary: #ffffff;
+    --bg-secondary: #f5f5f5;
+    --bg-tertiary: #e8e8e8;
+    --text-primary: #1a1a1a;
+    --text-secondary: #666666;
+    --border-color: #d0d0d0;
+    --accent-color: #4a90e2;
+    --accent-hover: #357abd;
+    --toolbar-height: 48px;
+    --statusbar-height: 28px;
+    --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    --font-mono: 'Courier New', Courier, monospace;
+}
+
+[data-theme="dark"] {
+    --bg-primary: #1e1e1e;
+    --bg-secondary: #252526;
+    --bg-tertiary: #2d2d30;
+    --text-primary: #d4d4d4;
+    --text-secondary: #9d9d9d;
+    --border-color: #3e3e42;
+    --accent-color: #569cd6;
+    --accent-hover: #4a8ac2;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+    overflow: hidden;
+}
+
+body {
+    font-family: var(--font-family);
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    transition: background-color 0.3s, color 0.3s;
+}
+
+#app {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--text-secondary);
+}
+
+/* Selection */
+::selection {
+    background-color: var(--accent-color);
+    color: white;
+}

@@ -1,0 +1,2 @@
+- add version nr to about box
+- integrate llm ai to generate markdown (openrouter link)

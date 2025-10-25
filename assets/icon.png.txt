@@ -1,0 +1,12 @@
+Placeholder for icon.png
+
+To complete the setup:
+1. Add a 512x512 PNG icon named 'icon.png' to this directory
+2. This icon will be used for the desktop application
+3. Delete this placeholder file once the actual icon is added
+
+Recommended icon specifications:
+- Format: PNG
+- Size: 512x512 pixels (or larger, square aspect ratio)
+- Transparent background
+- Simple, recognizable design

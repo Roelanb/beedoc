@@ -1,0 +1,202 @@
+/* Drag and Drop Styles */
+
+/* Make draggable sections have a subtle visual indicator */
+.draggable-section {
+    position: relative;
+    cursor: grab;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+    padding-left: 30px;
+}
+
+.draggable-section:hover {
+    background-color: rgba(0, 123, 255, 0.05);
+}
+
+/* Active dragging state */
+.draggable-section.dragging {
+    cursor: grabbing;
+    opacity: 0.4;
+    background-color: rgba(0, 123, 255, 0.1);
+}
+
+/* Target element during drag over */
+.draggable-section.drag-over {
+    background-color: rgba(0, 123, 255, 0.1);
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.3);
+    border-radius: 4px;
+}
+
+/* Drop indicator line */
+.drop-indicator {
+    position: fixed;
+    height: 3px;
+    background: linear-gradient(90deg,
+        transparent 0%,
+        #007bff 20%,
+        #007bff 80%,
+        transparent 100%);
+    pointer-events: none;
+    z-index: 10000;
+    border-radius: 2px;
+    box-shadow: 0 0 4px rgba(0, 123, 255, 0.5);
+    animation: pulse-indicator 1s ease-in-out infinite;
+}
+
+@keyframes pulse-indicator {
+    0%, 100% {
+        opacity: 0.8;
+        transform: scaleY(1);
+    }
+    50% {
+        opacity: 1;
+        transform: scaleY(1.2);
+    }
+}
+
+/* Drag handle - always visible */
+.drag-handle {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    min-height: 100%;
+    width: 24px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: grab;
+    opacity: 0.4;
+    transition: opacity 0.2s ease, background-color 0.2s ease;
+    border-radius: 4px 0 0 4px;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    pointer-events: auto;
+    margin: 0 !important;
+    padding: 0 !important;
+    line-height: 1;
+    vertical-align: top;
+    font-size: 0;
+}
+
+.drag-handle:hover {
+    opacity: 1;
+    background-color: rgba(0, 123, 255, 0.1);
+}
+
+.drag-handle::before {
+    content: '⋮⋮';
+    font-size: 16px;
+    color: #666;
+    letter-spacing: -2px;
+    line-height: 1;
+    display: block;
+}
+
+.draggable-section.dragging .drag-handle {
+    cursor: grabbing;
+}
+
+/* Dark theme support */
+body.dark-theme .draggable-section:hover {
+    background-color: rgba(100, 180, 255, 0.1);
+}
+
+body.dark-theme .draggable-section.drag-over {
+    background-color: rgba(100, 180, 255, 0.15);
+    box-shadow: 0 0 0 2px rgba(100, 180, 255, 0.4);
+}
+
+body.dark-theme .drop-indicator {
+    background: linear-gradient(90deg,
+        transparent 0%,
+        #64b4ff 20%,
+        #64b4ff 80%,
+        transparent 100%);
+    box-shadow: 0 0 4px rgba(100, 180, 255, 0.6);
+}
+
+body.dark-theme .drag-handle::before {
+    color: #999;
+}
+
+body.dark-theme .drag-handle:hover {
+    background-color: rgba(100, 180, 255, 0.15);
+}
+
+/* Special handling for different element types */
+.draggable-section h1,
+.draggable-section h2,
+.draggable-section h3,
+.draggable-section h4,
+.draggable-section h5,
+.draggable-section h6 {
+    pointer-events: auto;
+}
+
+/* Prevent text selection while dragging */
+.editor.dragging-active {
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+
+/* Visual feedback for table dragging */
+table.draggable-section {
+    cursor: grab;
+}
+
+table.draggable-section.dragging {
+    cursor: grabbing;
+}
+
+/* Visual feedback for lists */
+ul.draggable-section,
+ol.draggable-section {
+    padding-left: 70px;
+}
+
+/* Horizontal rule dragging */
+hr.draggable-section {
+    cursor: grab;
+    padding: 8px 0;
+}
+
+hr.draggable-section:hover {
+    background-color: rgba(0, 123, 255, 0.05);
+    border-radius: 4px;
+}
+
+/* Code block dragging */
+pre.draggable-section {
+    cursor: grab;
+}
+
+/* Blockquote dragging */
+blockquote.draggable-section {
+    cursor: grab;
+}
+
+/* Smooth transitions when elements are moved */
+.draggable-section {
+    transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+/* Mobile/touch support */
+@media (max-width: 768px) {
+    .drag-handle {
+        width: 20px;
+        opacity: 0.6;
+    }
+
+    .drag-handle::before {
+        font-size: 14px;
+    }
+}
+
+/* Accessibility - show drag handles when focused */
+.draggable-section:focus-within .drag-handle {
+    opacity: 1;
+    background-color: rgba(0, 123, 255, 0.15);
+}

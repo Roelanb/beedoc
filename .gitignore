@@ -1,0 +1,79 @@
+# Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-lock.yaml
+yarn.lock
+package-lock.json
+
+# Build outputs
+dist/
+build/
+*.AppImage
+*.deb
+*.exe
+*.tar.gz
+*.zip
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+*.tmp
+
+# OS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Cache
+.cache/
+.npm/
+.eslintcache
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Environment variables
+.env*
+
+# Desktop app build artifacts
+src-tauri/
+target/
+
+# Test outputs
+test-results/
+coverage/
+.nyc_output/
+
+# Development server files
+.server/
+hot/
+
+# Personal files
+*.backup
+*.bak
+*.old
+
+# Live server
+live-server/

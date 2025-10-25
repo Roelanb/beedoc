@@ -1,0 +1,174 @@
+/* D3.js Enhancement Styles */
+
+.d3-enhanced {
+    position: relative;
+}
+
+/* Smooth transitions for all D3-enhanced elements */
+.d3-enhanced h1,
+.d3-enhanced h2,
+.d3-enhanced h3,
+.d3-enhanced h4,
+.d3-enhanced h5,
+.d3-enhanced h6 {
+    transition: transform 0.2s ease-out;
+}
+
+.d3-enhanced blockquote {
+    transition: border-left-width 0.2s ease-out;
+}
+
+/* Line numbers in code blocks */
+.line-numbers {
+    pointer-events: none;
+}
+
+.has-line-numbers {
+    position: relative;
+}
+
+/* Table row hover effects */
+.d3-enhanced table tr {
+    transition: background-color 0.15s ease-out;
+}
+
+/* Animation toggle button active state */
+#btn-animations.active {
+    background-color: var(--accent-color);
+    color: white;
+}
+
+#btn-animations.active .icon {
+    animation: sparkle 2s ease-in-out infinite;
+}
+
+@keyframes sparkle {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.7;
+        transform: scale(1.1);
+    }
+}
+
+/* Document outline styles */
+.document-outline {
+    padding: 20px;
+    background-color: var(--bg-secondary);
+    border-radius: 8px;
+    margin: 20px 0;
+}
+
+.document-outline svg {
+    overflow: visible;
+}
+
+.document-outline text {
+    transition: fill 0.2s;
+}
+
+.document-outline text:hover {
+    fill: var(--accent-color);
+}
+
+/* Word cloud container */
+.word-cloud {
+    padding: 20px;
+    background-color: var(--bg-secondary);
+    border-radius: 8px;
+    margin: 20px 0;
+}
+
+.word-cloud text {
+    transition: fill 0.2s, font-size 0.2s;
+}
+
+.word-cloud text:hover {
+    fill: var(--accent-hover);
+}
+
+/* Fade-in animation for new elements */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* Slide-in animation */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Expand animation for HR */
+@keyframes expand {
+    from {
+        width: 0%;
+    }
+    to {
+        width: 100%;
+    }
+}
+
+/* Stagger animation for lists */
+.d3-enhanced ul li,
+.d3-enhanced ol li {
+    animation: fadeIn 0.3s ease-out;
+}
+
+/* Pulse effect for interactive elements */
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+/* Highlight effect */
+.d3-highlight {
+    background-color: var(--accent-color);
+    color: white;
+    padding: 2px 4px;
+    border-radius: 3px;
+    transition: all 0.3s;
+}
+
+/* Smooth scrolling for document navigation */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Focus ring for accessibility */
+.d3-enhanced *:focus {
+    outline: 2px solid var(--accent-color);
+    outline-offset: 2px;
+}
+
+/* Performance optimization */
+.d3-enhanced {
+    will-change: transform, opacity;
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+    .d3-enhanced *,
+    .d3-enhanced *::before,
+    .d3-enhanced *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
