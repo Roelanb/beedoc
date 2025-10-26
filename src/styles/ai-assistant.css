@@ -1,0 +1,30 @@
+/* AI Assistant Inline Ghost Text Styles */
+
+/* Ghost text appears inline after cursor in light gray */
+.ai-ghost-text {
+    color: #999999;
+    opacity: 0.6;
+    pointer-events: none;
+    user-select: none;
+    font-style: italic;
+}
+
+[data-theme="dark"] .ai-ghost-text {
+    color: #666666;
+    opacity: 0.5;
+}
+
+/* AI Toggle Button Active State */
+#btn-ai-toggle.active {
+    background: linear-gradient(135deg, var(--accent-color), #5ba3f5);
+    color: white;
+}
+
+#btn-ai-toggle.active .icon {
+    animation: sparkle 2s infinite;
+}
+
+@keyframes sparkle {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+}

@@ -169,7 +169,12 @@ class DragDropManager {
         let targetElement = e.target;
         while (targetElement && !targetElement.classList.contains('draggable-section')) {
             targetElement = targetElement.parentElement;
-            if (targetElement === this.editor) return; // Went too far up
+            if (targetElement === this.editor) {
+                // If we're over the editor but not over any section, check if we should
+                // show indicator above/below nearby sections
+                this.handleEditorDragOver(e);
+                return;
+            }
         }
 
         if (!targetElement || targetElement === this.draggedElement) {
@@ -186,6 +191,40 @@ class DragDropManager {
 
         // Add visual feedback
         targetElement.classList.add('drag-over');
+    }
+
+    handleEditorDragOver(e) {
+        // When dragging over empty space in the editor, find the closest section
+        const sections = Array.from(this.editor.querySelectorAll('.draggable-section'));
+        if (sections.length === 0) return;
+
+        const mouseY = e.clientY;
+        let closestSection = null;
+        let closestDistance = Infinity;
+        let insertBefore = false;
+
+        sections.forEach(section => {
+            if (section === this.draggedElement) return;
+
+            const rect = section.getBoundingClientRect();
+            const distanceToTop = Math.abs(mouseY - rect.top);
+            const distanceToBottom = Math.abs(mouseY - rect.bottom);
+
+            if (distanceToTop < closestDistance) {
+                closestDistance = distanceToTop;
+                closestSection = section;
+                insertBefore = true;
+            }
+            if (distanceToBottom < closestDistance) {
+                closestDistance = distanceToBottom;
+                closestSection = section;
+                insertBefore = false;
+            }
+        });
+
+        if (closestSection) {
+            this.showDropIndicator(closestSection, insertBefore);
+        }
     }
 
     handleDragLeave(e) {
@@ -213,7 +252,11 @@ class DragDropManager {
         let targetElement = e.target;
         while (targetElement && !targetElement.classList.contains('draggable-section')) {
             targetElement = targetElement.parentElement;
-            if (targetElement === this.editor) return;
+            if (targetElement === this.editor) {
+                // Dropped on editor background - find closest section
+                this.handleEditorDrop(e);
+                return;
+            }
         }
 
         if (!targetElement || targetElement === this.draggedElement) {
@@ -236,6 +279,45 @@ class DragDropManager {
         targetElement.classList.remove('drag-over');
 
         // The element already has its event listeners, no need to re-add them
+    }
+
+    handleEditorDrop(e) {
+        // When dropped on editor background, find the closest section
+        const sections = Array.from(this.editor.querySelectorAll('.draggable-section'));
+        if (sections.length === 0) return;
+
+        const mouseY = e.clientY;
+        let closestSection = null;
+        let closestDistance = Infinity;
+        let insertBefore = false;
+
+        sections.forEach(section => {
+            if (section === this.draggedElement) return;
+
+            const rect = section.getBoundingClientRect();
+            const distanceToTop = Math.abs(mouseY - rect.top);
+            const distanceToBottom = Math.abs(mouseY - rect.bottom);
+
+            if (distanceToTop < closestDistance) {
+                closestDistance = distanceToTop;
+                closestSection = section;
+                insertBefore = true;
+            }
+            if (distanceToBottom < closestDistance) {
+                closestDistance = distanceToBottom;
+                closestSection = section;
+                insertBefore = false;
+            }
+        });
+
+        if (closestSection) {
+            // Perform the move
+            if (insertBefore) {
+                closestSection.parentNode.insertBefore(this.draggedElement, closestSection);
+            } else {
+                closestSection.parentNode.insertBefore(this.draggedElement, closestSection.nextSibling);
+            }
+        }
     }
 
     showDropIndicator(targetElement, insertBefore) {

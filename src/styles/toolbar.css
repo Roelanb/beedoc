@@ -84,7 +84,8 @@
     flex-shrink: 0;
 }
 
-.status-item {
-    display: flex;
-    align-items: center;
+[data-theme="dark"] .toolbar-btn.active {
+    background-color: var(--accent-color);
+    color: white;
+    border-color: var(--accent-color);
 }

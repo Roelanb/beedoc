@@ -40,14 +40,21 @@ body {
     font-family: var(--font-family);
     background-color: var(--bg-primary);
     color: var(--text-primary);
-    transition: background-color 0.3s, color 0.3s;
 }
 
 #app {
     display: flex;
     flex-direction: column;
     height: 100vh;
+    overflow: hidden;
 }
+
+/* Default layout with file browser visible */
+.editor {
+    margin-left: 280px;
+    width: calc(100% - 280px);
+}
+
 
 /* Scrollbar Styling */
 ::-webkit-scrollbar {

@@ -7,11 +7,14 @@ class Toolbar {
     }
     
     init() {
+        // File browser toggle
+        this.bindButton('btn-toggle-browser', () => window.fileBrowser?.toggle());
+
         // File operations
         this.bindButton('btn-new', () => window.fileOps?.newFile());
         this.bindButton('btn-open', () => window.fileOps?.openFile());
         this.bindButton('btn-save', () => window.fileOps?.saveFile());
-        
+
         // Export operations
         this.bindButton('btn-export-html', () => window.fileOps?.exportHTML());
         this.bindButton('btn-export-pdf', () => window.fileOps?.exportPDF());
@@ -50,12 +53,40 @@ class Toolbar {
         
         // Help panel
         this.bindButton('btn-help', () => this.toggleHelp());
-        
+
+        // About panel
+        this.bindButton('btn-about', () => this.toggleAbout());
+
+        // AI Assistant toggle
+        this.bindButton('btn-ai-toggle', () => {
+            if (window.aiAssistant) {
+                window.aiAssistant.toggleAI();
+            }
+        });
+
         // Load saved theme
         this.loadTheme();
-        
+
         // Setup help panel close handlers
         this.setupHelpPanel();
+
+        // Setup about panel close handlers
+        this.setupAboutPanel();
+
+        // Global Escape key handler for dialogs
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                const helpPanel = document.getElementById('help-panel');
+                const aboutPanel = document.getElementById('about-panel');
+
+                // Close whichever panel is open
+                if (helpPanel && helpPanel.style.display !== 'none') {
+                    this.toggleHelp();
+                } else if (aboutPanel && aboutPanel.style.display !== 'none') {
+                    this.toggleAbout();
+                }
+            }
+        });
     }
     
     setupHelpPanel() {
@@ -74,12 +105,8 @@ class Toolbar {
                 }
             });
             
-            // Close on Escape key
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape' && helpPanel.style.display !== 'none') {
-                    this.toggleHelp();
-                }
-            });
+            // Close on Escape key (handled globally below)
+            // Removed individual listener to avoid duplicates
         }
     }
     
@@ -90,6 +117,38 @@ class Toolbar {
                 helpPanel.style.display = 'flex';
             } else {
                 helpPanel.style.display = 'none';
+            }
+        }
+    }
+
+    setupAboutPanel() {
+        const aboutPanel = document.getElementById('about-panel');
+        const aboutClose = document.getElementById('about-close');
+
+        if (aboutClose) {
+            aboutClose.addEventListener('click', () => this.toggleAbout());
+        }
+
+        if (aboutPanel) {
+            // Close on background click
+            aboutPanel.addEventListener('click', (e) => {
+                if (e.target === aboutPanel) {
+                    this.toggleAbout();
+                }
+            });
+
+            // Close on Escape key (handled globally below)
+            // Removed individual listener to avoid duplicates
+        }
+    }
+
+    toggleAbout() {
+        const aboutPanel = document.getElementById('about-panel');
+        if (aboutPanel) {
+            if (aboutPanel.style.display === 'none') {
+                aboutPanel.style.display = 'flex';
+            } else {
+                aboutPanel.style.display = 'none';
             }
         }
     }
@@ -131,13 +190,13 @@ class Toolbar {
             this.theme = savedTheme;
             document.documentElement.setAttribute('data-theme', this.theme);
         }
-        
+
         // Load animation preference
         const savedAnimations = localStorage.getItem('beedoc-animations');
         if (savedAnimations !== null && window.d3Renderer) {
             const enabled = savedAnimations === 'true';
             window.d3Renderer.toggleAnimations(enabled);
-            
+
             const btn = document.getElementById('btn-animations');
             if (btn) {
                 if (enabled) {
@@ -146,6 +205,13 @@ class Toolbar {
                     btn.classList.remove('active');
                 }
             }
+        }
+
+        // Load AI assistant preference
+        const aiEnabled = localStorage.getItem('beedoc-ai-enabled') === 'true';
+        const aiBtn = document.getElementById('btn-ai-toggle');
+        if (aiBtn && aiEnabled) {
+            aiBtn.classList.add('active');
         }
     }
 }

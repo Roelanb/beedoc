@@ -4,14 +4,15 @@
   "description": "A WYSIWYG markdown editor with D3.js rendering",
   "main": "src/index.html",
   "scripts": {
-    "dev": "cd src && live-server --port=8080 --entry-file=index.html",
+    "dev": "node server.js",
+    "dev:old": "cd src && live-server --port=8080 --entry-file=index.html",
     "build": "npm run build:web",
     "build:web": "rm -rf dist && mkdir -p dist && cp -r src/. dist/",
     "prebuild:linux": "npm run build:web",
-    "build:linux": "pake http://127.0.0.1:8081 --name BeeDoc --version 0.1.1 --icon assets/icon.png --width 1200 --height 800",
+    "build:linux": "pake dist/index.html --name BeeDoc --version 0.1.1 --icon assets/icon.png --width 1200 --height 800",
     "serve:dist": "cd dist && python3 -m http.server 8081",
     "prebuild:windows": "npm run build:web",
-    "build:windows": "pake http://127.0.0.1:8081 --name BeeDoc --version 0.1.1 --icon assets/icon.png --width 1200 --height 800 --targets windows"
+    "build:windows": "pake dist/index.html --name BeeDoc --version 0.1.1 --icon assets/icon.png --width 1200 --height 800 --targets windows"
   },
   "keywords": [
     "markdown",

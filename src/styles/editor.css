@@ -1,13 +1,15 @@
 /* Editor Styles */
 .editor-container {
     flex: 1;
-    overflow: auto;
+    overflow-y: auto;
+    overflow-x: hidden;
     background-color: var(--bg-primary);
     position: relative;
+    height: calc(100vh - var(--toolbar-height) - var(--statusbar-height));
 }
 
 .editor {
-    min-height: calc(100vh - var(--toolbar-height) - var(--statusbar-height));
+    min-height: 100%;
     max-width: 900px;
     margin: 0 auto;
     padding: 40px 60px;

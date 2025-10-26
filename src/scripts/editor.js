@@ -19,6 +19,9 @@ class MarkdownEditor {
         // Initialize content
         this.updateContent();
 
+        // Initialize currentFile property
+        this.currentFile = null;
+
         // Ensure typing creates paragraphs
         this.ensureParagraphStructure();
     }
@@ -36,6 +39,11 @@ class MarkdownEditor {
         if (window.d3Renderer) {
             // D3 renderer automatically observes changes via MutationObserver
             // No explicit call needed, but we can trigger specific effects here if needed
+        }
+
+        // Trigger AI suggestions
+        if (window.aiAssistant) {
+            window.aiAssistant.handleInput();
         }
     }
     
@@ -65,8 +73,15 @@ class MarkdownEditor {
                     this.toggleFormat('strikethrough');
                     break;
                 case 'e':
-                    e.preventDefault();
-                    this.toggleFormat('code');
+                    if (e.shiftKey) {
+                        e.preventDefault();
+                        if (window.fileBrowser) {
+                            window.fileBrowser.toggle();
+                        }
+                    } else {
+                        e.preventDefault();
+                        this.toggleFormat('code');
+                    }
                     break;
                 case 'k':
                     e.preventDefault();
@@ -123,7 +138,7 @@ class MarkdownEditor {
             document.execCommand('insertText', false, '    ');
         }
         
-        // Handle Enter key in lists
+        // Handle Enter key
         if (e.key === 'Enter') {
             const selection = window.getSelection();
             if (selection.rangeCount > 0) {
@@ -132,21 +147,23 @@ class MarkdownEditor {
                 if (element.nodeType === Node.TEXT_NODE) {
                     element = element.parentElement;
                 }
-                
+
                 // Check if we're in a list item
                 let listItem = element;
+                let inList = false;
                 while (listItem && listItem !== this.editor) {
                     if (listItem.tagName === 'LI') {
+                        inList = true;
                         // If list item is empty, exit the list
                         if (!listItem.textContent.trim()) {
                             e.preventDefault();
                             const list = listItem.parentElement;
                             listItem.remove();
-                            
+
                             const p = document.createElement('p');
                             p.innerHTML = '<br>';
                             list.parentNode.insertBefore(p, list.nextSibling);
-                            
+
                             range.setStart(p, 0);
                             range.collapse(true);
                             selection.removeAllRanges();
@@ -155,6 +172,25 @@ class MarkdownEditor {
                         break;
                     }
                     listItem = listItem.parentElement;
+                }
+
+                // For regular paragraphs and other elements, insert a line break instead of creating new paragraph
+                if (!inList) {
+                    e.preventDefault();
+
+                    // Insert a <br> tag at cursor position
+                    const br = document.createElement('br');
+                    range.deleteContents();
+                    range.insertNode(br);
+
+                    // Move cursor after the <br>
+                    range.setStartAfter(br);
+                    range.collapse(true);
+                    selection.removeAllRanges();
+                    selection.addRange(range);
+
+                    // Trigger input event to ensure content is updated
+                    this.handleInput();
                 }
             }
         }
@@ -835,6 +871,22 @@ class MarkdownEditor {
         this.currentFile = null;
         this.isModified = false;
         this.updateStatusBar();
+    }
+
+    setContent(content, isMarkdown = false) {
+        // Clear current content
+        this.clear();
+
+        if (isMarkdown) {
+            // If content is markdown, convert to HTML and set
+            this.setMarkdown(content);
+        } else {
+            // If content is plain text, treat as markdown
+            this.setMarkdown(content);
+        }
+
+        // Mark as not modified since we just loaded from file
+        this.isModified = false;
     }
 
     ensureParagraphStructure() {

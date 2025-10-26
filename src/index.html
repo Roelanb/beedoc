@@ -8,13 +8,25 @@
     <link rel="stylesheet" href="styles/editor.css">
     <link rel="stylesheet" href="styles/toolbar.css">
     <link rel="stylesheet" href="styles/help.css">
+    <link rel="stylesheet" href="styles/about.css">
+    <link rel="stylesheet" href="styles/ai-assistant.css">
     <link rel="stylesheet" href="styles/d3-enhancements.css">
     <link rel="stylesheet" href="styles/drag-drop.css">
+    <link rel="stylesheet" href="styles/context-menu.css">
+    <link rel="stylesheet" href="styles/file-browser.css">
 </head>
 <body>
     <div id="app">
         <!-- Toolbar -->
         <div id="toolbar" class="toolbar">
+            <div class="toolbar-group">
+                <button id="btn-toggle-browser" class="toolbar-btn active" title="Close File Browser (Ctrl+Shift+E)">
+                    <span class="icon">📁</span>
+                </button>
+            </div>
+
+            <div class="toolbar-separator"></div>
+
             <div class="toolbar-group">
                 <button id="btn-new" class="toolbar-btn" title="New File (Ctrl+N)">
                     <span class="icon">New</span>
@@ -26,7 +38,7 @@
                     <span class="icon">Save</span>
                 </button>
             </div>
-            
+
             <div class="toolbar-separator"></div>
             
             <div class="toolbar-group">
@@ -114,6 +126,9 @@
             <div class="toolbar-spacer"></div>
             
             <div class="toolbar-group">
+                <button id="btn-ai-toggle" class="toolbar-btn" title="Toggle AI Assistant (Alt+A)">
+                    <span class="icon">🤖</span>
+                </button>
                 <button id="btn-theme" class="toolbar-btn" title="Toggle Theme">
                     <span class="icon">Theme</span>
                 </button>
@@ -123,9 +138,51 @@
                 <button id="btn-help" class="toolbar-btn" title="Keyboard Shortcuts (?)">
                     <span class="icon">?</span>
                 </button>
+                <button id="btn-about" class="toolbar-btn" title="About BeeDoc">
+                    <span class="icon">ℹ</span>
+                </button>
             </div>
         </div>
         
+        <!-- About Dialog -->
+        <div id="about-panel" class="about-panel" style="display: none;">
+            <div class="about-content">
+                <button id="about-close" class="about-close">&times;</button>
+                <div class="about-header">
+                    <div class="about-icon">📚</div>
+                    <h2>BeeDoc</h2>
+                    <div class="about-version">Version 0.1.1</div>
+                </div>
+                <div class="about-body">
+                    <p class="about-description">
+                        A powerful WYSIWYG markdown editor with live preview and beautiful D3.js animations.
+                    </p>
+                    <div class="about-section">
+                        <h3>License</h3>
+                        <p>MIT License</p>
+                        <p class="about-license-text">
+                            Permission is hereby granted, free of charge, to any person obtaining a copy
+                            of this software and associated documentation files (the "Software"), to deal
+                            in the Software without restriction, including without limitation the rights
+                            to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+                            copies of the Software.
+                        </p>
+                    </div>
+                    <div class="about-section">
+                        <h3>Technologies</h3>
+                        <ul class="about-tech-list">
+                            <li>D3.js v7 - Data visualization and animations</li>
+                            <li>marked.js - Markdown parsing</li>
+                            <li>Pake - Desktop application packaging</li>
+                        </ul>
+                    </div>
+                    <div class="about-footer">
+                        <p>&copy; 2025 BeeDoc. All rights reserved.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Keyboard Shortcuts Help Panel -->
         <div id="help-panel" class="help-panel" style="display: none;">
             <div class="help-content">
@@ -147,8 +204,28 @@
                             <kbd>Ctrl+S</kbd>
                             <span>Save File</span>
                         </div>
+                        <div class="shortcut-item">
+                            <kbd>Ctrl+Shift+E</kbd>
+                            <span>Toggle File Browser</span>
+                        </div>
                     </div>
-                    
+
+                    <div class="shortcut-section">
+                        <h3>AI Assistant</h3>
+                        <div class="shortcut-item">
+                            <kbd>Alt+A</kbd>
+                            <span>Toggle AI Assistant</span>
+                        </div>
+                        <div class="shortcut-item">
+                            <kbd>Tab</kbd>
+                            <span>Accept AI Suggestion</span>
+                        </div>
+                        <div class="shortcut-item">
+                            <kbd>Esc</kbd>
+                            <span>Dismiss Suggestion</span>
+                        </div>
+                    </div>
+
                     <div class="shortcut-section">
                         <h3>Text Formatting</h3>
                         <div class="shortcut-item">
@@ -220,14 +297,22 @@
         <div id="editor-container" class="editor-container">
             <!-- WYSIWYG Editor -->
             <div id="editor" class="editor" contenteditable="true" spellcheck="true">
-                <h1>Welcome to BeeDoc</h1>
-                <p>Start typing your markdown here...</p>
-                <h2>Features</h2>
+                <h1>📚 Welcome to BeeDoc!</h1>
+                <p>A powerful WYSIWYG markdown editor with live preview and beautiful D3.js animations.</p>
+                <h2>✨ Features</h2>
                 <ul>
-                    <li>WYSIWYG editing</li>
-                    <li>Real-time rendering with D3.js</li>
-                    <li>Full markdown support</li>
+                    <li><strong>WYSIWYG editing</strong> - See your markdown rendered in real-time</li>
+                    <li><strong>D3.js visualizations</strong> - Beautiful animated enhancements</li>
+                    <li><strong>Full markdown support</strong> - All standard markdown features</li>
+                    <li><strong>Keyboard shortcuts</strong> - Fast formatting with hotkeys</li>
                 </ul>
+                <h2>🎯 Getting Started</h2>
+                <ol>
+                    <li>Click <strong>Open</strong> (Ctrl+O) to open an existing file</li>
+                    <li>Click <strong>New</strong> (Ctrl+N) to create a new document</li>
+                    <li>Start typing and see live markdown rendering</li>
+                    <li>Press <strong>?</strong> to see all keyboard shortcuts</li>
+                </ol>
             </div>
         </div>
 
@@ -251,8 +336,11 @@
     <script src="scripts/editor.js"></script>
     <script src="scripts/toolbar.js"></script>
     <script src="scripts/file-operations.js"></script>
+    <script src="scripts/ai-assistant.js"></script>
     <script src="scripts/d3-renderer.js"></script>
     <script src="scripts/drag-drop.js"></script>
+    <script src="scripts/context-menu.js"></script>
+    <script src="scripts/file-browser.js"></script>
     <script src="scripts/app.js"></script>
 </body>
 </html>
